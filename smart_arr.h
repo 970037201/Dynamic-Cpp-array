@@ -1,5 +1,6 @@
 #pragma once
 #include <memory>
+
 /*A 100 line small class for managing dynamic arrays with objects, and simple types if you want to.
 
 Object rules: (For constructing dynamic arrays with)
@@ -7,20 +8,33 @@ Object rules: (For constructing dynamic arrays with)
 	-Smart array will use copy operator. (Operator= (const yourtype& item)), for use in push(), operator=(copy), and make_smart()
 	-Smart array will compare elements (Operator== (const yourtype& comparing)), for use in find() function
 	-Smart array will call deconstructor. (Safe with basic types, for use in reserve())
+
+Array safety Notices:
+	-Do not preform memory reallocation/management/manipulation outside of access with the return of the data() function
+	-Do not expect pop to remove elements when your array size is zero.
+	-Do not expect peek to return valid element, or not corrupt heap if size of array is zero.
+	-Do not expect operator[] to return valid reference to object if outside bounds of array.
+
+Other Notices:
+	-If you notice any problems with object management with array, contact your debugger/brain before you contact me.
+	-This is not a python program, nor a scratch program, brush your teeth, dont do drugs.
 */
+
 template<class T>
 class smart_arr {
 	size_t width;
 	T* arr;
 public:
-		//Constructors & deconstructor
+		//Constructors
 	inline constexpr smart_arr() : arr(0), width(0) {};//default constructor, creates array of size 0, and does not allocate memory
 	inline smart_arr(size_t length) : arr(0), width(0) { reserve(length);}//creates array of width: length, and default constructs values
 	inline smart_arr(const smart_arr<T>& construct) : arr(0), width(0) { this->operator=(construct); }//providing constructor for copy
 	inline smart_arr(smart_arr<T>&& construct) : arr(0), width(0) { this->operator=(construct); }//providing constructor for move
 	inline smart_arr(const T* construct, size_t length) : arr(0), width(0) { make_smart(construct, length); }//providing constructor for copy
+		//Deconstructing
 	inline ~smart_arr() { reserve(0); }//resizes the array to length of zero, deconstructing objects and free-ing memory
-		//Allocators: sets up and resizes mem while safely constructing / deconstructing objects.
+
+		//Allocators: Resizes, copies, and moves arrays
 	void operator=(const smart_arr<T>& construct) {//copies elements from
 		reserve(construct.width);
 		if (construct.arr && arr) {
@@ -64,16 +78,23 @@ public:
 			}
 		}
 	}
-		//Element access, adds and edits objects
-	inline void push(const T& instance) {//adds value to array - slow for multiple pushes (use reserve and operator[])
+
+		//Element access, for stack-like use.
+	inline void push(const T& instance) {//adds value to array - slow for multiple pushes (use reserve() and operator[])
 		reserve(width + 1);
 		arr[width - 1] = instance;
 	}
-	inline T& operator[](size_t ptr) { return arr[ptr]; }//access element at index by reference - can write and read
-		//Array states, such as size, allocation state, location, and equality. Must all be constant.
+	inline T& peek(void) { return arr[width - 1]; }//Access top element - Not safe for unbounded access
+	inline void pop(void) { reserve(width ? (width - 1) : 0); } //return top of array, removes top of array. (reserve() faster for multiple)
+
+		//Element access - for array and referencing use.
+	inline T& operator[](size_t ptr) { return arr[ptr]; }//access element at index by reference - Not safe for unbounded access
+	inline const T* data(void) { return arr; }//Get ray array pointer - Not recommended to alter / remove data in any way!
+
+		//States of array
 	inline size_t size(void) const { return width; }//returns count of elements
 	inline operator bool(void) const { return arr; }//returns allocation status of array
-	bool operator==(const smart_arr<T>& other) const {//returns equality (operator==) with another array.
+	bool operator==(const smart_arr<T>& other) const {//returns equality (operator==) with another array of same type
 		if (!(bool(arr) ^ bool(other.arr))) {
 			if (!arr) {
 				return 1;
@@ -89,12 +110,15 @@ public:
 		}
 		return 0;
 	}
-	size_t find(const T& instance) const {//returns index of matching element, or count of elements otherwise.
+
+		//Existence of elements in array
+	size_t find(const T& item) const {//returns index of matching element, or count of elements otherwise.
 		for (size_t ptr = arr ? 0 : width; ptr < width; ++ptr) {
-			if (arr[ptr] == instance) {
+			if (arr[ptr] == item) {
 				return ptr;
 			}
 		}
 		return width;
 	}
+	inline bool contains(const T& item) const { return find(item) != width; }//returns true if array contains element, false otherwise
 };
