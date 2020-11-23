@@ -1,7 +1,7 @@
 #pragma once
 #include <memory>
 
-/*A 100 line small class for managing dynamic arrays with objects, and simple types if you want to.
+/*A small class for managing dynamic arrays with objects, and simple types if you want to.
 
 Object rules: (For constructing dynamic arrays with)
 	-Smart array will use default constructor. for use in reserve(), and in extention, many of the class functions.
@@ -18,6 +18,7 @@ Array safety Notices:
 Other Notices:
 	-If you notice any problems with object management with array, contact your debugger/brain before you contact me.
 	-This is not a python program, nor a scratch program, brush your teeth, dont do drugs.
+	-No license, feel free to use, dont blame me for your mistakes, use at your own liking
 */
 
 template<class T>
