@@ -29,7 +29,7 @@ public:
 	inline constexpr smart_arr() : arr(0), width(0) {};//default constructor, creates array of size 0, and does not allocate memory
 	inline smart_arr(size_t length) : arr(0), width(0) { reserve(length);}//creates array of width: length, and default constructs values
 	inline smart_arr(const smart_arr<T>& construct) : arr(0), width(0) { this->operator=(construct); }//providing constructor for copy
-	inline smart_arr(smart_arr<T>&& construct) : arr(0), width(0) { this->operator=(construct); }//providing constructor for move
+	inline smart_arr(smart_arr<T>&& construct) noexcept : arr(0), width(0) { this->operator=(construct); }//providing constructor for move
 	inline smart_arr(const T* construct, size_t length) : arr(0), width(0) { make_smart(construct, length); }//providing constructor for copy
 		//Deconstructing
 	inline ~smart_arr() { reserve(0); }//resizes the array to length of zero, deconstructing objects and free-ing memory
@@ -89,6 +89,7 @@ public:
 
 		//Element access - for array and referencing use.
 	inline T& operator[](size_t ptr) { return arr[ptr]; }//access element at index by reference - Not safe for unbounded access
+	inline const T& operator[](size_t ptr) const { return arr[ptr]; }//access element at index by const reference - Unsafe for unbounded access
 	inline const T* data(void) { return arr; }//Get ray array pointer - Not recommended to alter / remove data in any way!
 
 		//States of array
