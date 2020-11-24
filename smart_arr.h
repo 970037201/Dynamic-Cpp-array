@@ -86,12 +86,26 @@ public:
 		arr[width - 1] = instance;
 	}
 	inline T& peek(void) { return arr[width - 1]; }//Access top element - Not safe for unbounded access
-	inline void pop(void) { reserve(width ? (width - 1) : 0); } //return top of array, removes top of array. (reserve() faster for multiple)
+	inline void pop(void) { reserve(width ? (width - 1) : 0); } //removes top of array. (reserve() faster for multiple)
 
 		//Element access - for array and referencing use.
 	inline T& operator[](size_t ptr) { return arr[ptr]; }//access element at index by reference - Not safe for unbounded access
 	inline const T& operator[](size_t ptr) const { return arr[ptr]; }//access element at index by const reference - Unsafe for unbounded access
 	inline const T* data(void) { return arr; }//Get ray array pointer - Not recommended to alter / remove data in any way!
+
+		//Multi element removal
+	//writes over elements beyond index + length to index position, deconstructs and copies during move. Does not remove trailing elements.
+	void remove(size_t index, size_t length) {
+		for (size_t ptr = index; ptr < (width > length ? width - length : 0); ++ptr) {
+			arr[ptr] = arr[ptr + length];
+		}
+	}
+	void remove_resize(size_t index, size_t length) {//Does the same as remove() but also resizes array to fit removal of elements
+		remove(index, length);
+		if (index < width) {
+			reserve(index + length > width ? index : width - length);
+		}
+	}
 
 		//States of array
 	inline size_t size(void) const { return width; }//returns count of elements
