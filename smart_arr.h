@@ -12,8 +12,8 @@ Object rules: (For constructing dynamic arrays with)
 Array safety Notices:
 	-Do not preform memory reallocation/management/manipulation outside of access with the return of the data() function
 	-Do not expect pop to remove elements when your array size is zero.
-	-Do not expect peek to return valid element if array size is zero
-	-Do not expect operator[] to return valid object in array if index is outside array bounds
+	-Do not expect peek to return valid element if array size is zero, it might even corrupt heap
+	-Do not expect operator[] to return valid object in array if index is outside array bounds, it might even corrupt heap
 
 Other Notices:
 	-If you notice any problems with object management with array, contact your debugger/brain before you contact me.
@@ -85,12 +85,12 @@ public:
 		reserve(width + 1);
 		arr[width - 1] = instance;
 	}
-	inline T& peek(void) { return width && arr ? arr[width - 1] : T(); }//Access top element
+	inline T& peek(void) { return arr[width - 1]; }//Access top element
 	inline void pop(void) { reserve(width ? (width - 1) : 0); } //removes top of array. (reserve() faster for multiple)
 
 		//Element access - for array and referencing use.
-	inline T& operator[](size_t ptr) { return ptr < width && arr ? arr[ptr] : T(); }//access element at index by reference
-	inline const T& operator[](size_t ptr) const { return ptr < width && arr ? arr[ptr] : T(); }//access element at index by const reference
+	inline T& operator[](size_t ptr) { return arr[ptr]; }//access element at index by reference
+	inline const T& operator[](size_t ptr) const { return arr[ptr]; }//access element at index by const reference
 	inline const T* data(void) { return arr; }//Get ray array pointer - Not recommended to alter / remove data in any way!
 
 		//Multi element removal
