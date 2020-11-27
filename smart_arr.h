@@ -26,13 +26,13 @@ class smart_arr {
 	size_t width;
 	T* arr;
 public:
-	//Constructors
+		//Constructors
 	inline constexpr smart_arr() : arr(0), width(0) {};//default constructor, creates array of size 0, and does not allocate memory
 	inline smart_arr(size_t length) : arr(0), width(0) { reserve(length); }//creates array of width: length, and default constructs values
 	inline smart_arr(const smart_arr<T>& construct) : arr(0), width(0) { this->operator=(construct); }//providing constructor for copy
 	inline smart_arr(smart_arr<T>&& construct) noexcept : arr(0), width(0) { this->operator=(construct); }//providing constructor for move
 	inline smart_arr(const T* construct, size_t length) : arr(0), width(0) { make_smart(construct, length); }//providing constructor for copy
-		//Deconstructing
+		//Deconstructors
 	inline ~smart_arr() { reserve(0); }//resizes the array to length of zero, deconstructing objects and free-ing memory
 
 		//Allocators: Resizes, copies, and moves arrays
@@ -80,7 +80,7 @@ public:
 		}
 	}
 
-	//Element access, for stack-like use.
+		//Element access, for stack-like use.
 	inline void push(const T& instance) {//adds value to array - slow for multiple pushes (use reserve() and operator[])
 		reserve(width + 1);
 		arr[width - 1] = instance;
@@ -107,7 +107,7 @@ public:
 		}
 	}
 
-	//States of array
+		//States of array
 	inline size_t size(void) const { return width; }//returns count of elements
 	inline operator bool(void) const { return arr; }//returns allocation status of array
 	bool operator==(const smart_arr<T>& other) const {//returns equality (operator==) with another array of same type
@@ -127,7 +127,7 @@ public:
 		return 0;
 	}
 
-	//Existence of elements in array
+		//Existence of elements in array
 	size_t find(const T& item) const {//returns index of matching element, or count of elements otherwise.
 		for (size_t ptr = arr ? 0 : width; ptr < width; ++ptr) {
 			if (arr[ptr] == item) {
