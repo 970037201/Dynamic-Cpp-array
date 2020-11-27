@@ -7,7 +7,6 @@ The class stores an array, managed with realloc, free, and placement new, and ma
 
 The class also preforms deconstructing, and deallocating clipped and uneeded memory, and constructing objects allocated on resize.
 
-The class is a small alternative toward std::vector, if you dont want to add 30kb on your executable size - or whatever it is nowdays
+The class is a small alternative toward std::vector, if you dont want to add 30kb on your executable size - or whatever it takes up in your resultant program.
 
-The class is easy enough to read and interpret that you could understand how dynamic arrays work - if you want to port it to another
-language, or educate yourself.
+The class is easy enough to read and interpret that you could understand how dynamic arrays work - if you want to port it to another language, or educate yourself.
