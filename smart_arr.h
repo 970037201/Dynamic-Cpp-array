@@ -12,8 +12,8 @@ Object rules: (For constructing dynamic arrays with)
 Array safety Notices:
 	-Do not preform memory reallocation/management/manipulation outside of access with the return of the data() function
 	-Do not expect pop to remove elements when your array size is zero.
-	-Do not expect peek to return valid element, or not corrupt heap if size of array is zero.
-	-Do not expect operator[] to return valid reference to object if outside bounds of array.
+	-Do not expect peek to return valid element if array size is zero
+	-Do not expect operator[] to return valid object in array if index is outside array bounds
 
 Other Notices:
 	-If you notice any problems with object management with array, contact your debugger/brain before you contact me.
@@ -26,9 +26,9 @@ class smart_arr {
 	size_t width;
 	T* arr;
 public:
-		//Constructors
+	//Constructors
 	inline constexpr smart_arr() : arr(0), width(0) {};//default constructor, creates array of size 0, and does not allocate memory
-	inline smart_arr(size_t length) : arr(0), width(0) { reserve(length);}//creates array of width: length, and default constructs values
+	inline smart_arr(size_t length) : arr(0), width(0) { reserve(length); }//creates array of width: length, and default constructs values
 	inline smart_arr(const smart_arr<T>& construct) : arr(0), width(0) { this->operator=(construct); }//providing constructor for copy
 	inline smart_arr(smart_arr<T>&& construct) noexcept : arr(0), width(0) { this->operator=(construct); }//providing constructor for move
 	inline smart_arr(const T* construct, size_t length) : arr(0), width(0) { make_smart(construct, length); }//providing constructor for copy
@@ -80,17 +80,17 @@ public:
 		}
 	}
 
-		//Element access, for stack-like use.
+	//Element access, for stack-like use.
 	inline void push(const T& instance) {//adds value to array - slow for multiple pushes (use reserve() and operator[])
 		reserve(width + 1);
 		arr[width - 1] = instance;
 	}
-	inline T& peek(void) { return arr[width - 1]; }//Access top element - Not safe for unbounded access
+	inline T& peek(void) { return width && arr ? arr[width - 1] : T(); }//Access top element
 	inline void pop(void) { reserve(width ? (width - 1) : 0); } //removes top of array. (reserve() faster for multiple)
 
 		//Element access - for array and referencing use.
-	inline T& operator[](size_t ptr) { return arr[ptr]; }//access element at index by reference - Not safe for unbounded access
-	inline const T& operator[](size_t ptr) const { return arr[ptr]; }//access element at index by const reference - Unsafe for unbounded access
+	inline T& operator[](size_t ptr) { return ptr < width && arr ? arr[ptr] : T(); }//access element at index by reference
+	inline const T& operator[](size_t ptr) const { return ptr < width && arr ? arr[ptr] : T(); }//access element at index by const reference
 	inline const T* data(void) { return arr; }//Get ray array pointer - Not recommended to alter / remove data in any way!
 
 		//Multi element removal
@@ -107,7 +107,7 @@ public:
 		}
 	}
 
-		//States of array
+	//States of array
 	inline size_t size(void) const { return width; }//returns count of elements
 	inline operator bool(void) const { return arr; }//returns allocation status of array
 	bool operator==(const smart_arr<T>& other) const {//returns equality (operator==) with another array of same type
@@ -127,7 +127,7 @@ public:
 		return 0;
 	}
 
-		//Existence of elements in array
+	//Existence of elements in array
 	size_t find(const T& item) const {//returns index of matching element, or count of elements otherwise.
 		for (size_t ptr = arr ? 0 : width; ptr < width; ++ptr) {
 			if (arr[ptr] == item) {
