@@ -5,15 +5,13 @@
 
 Object rules: (For constructing dynamic arrays with)
 	-Smart array will use default constructor. for use in reserve(), and in extention, many of the class functions.
-	-Smart array will use copy operator. (Operator= (const yourtype& item)), for use in push(), operator=(copy), and make_smart()
+	-Smart array will use copy operator. (Operator= (const yourtype& item)), operator=(copy), and make_smart()
 	-Smart array will compare elements (Operator== (const yourtype& comparing)), for use in find() function
 	-Smart array will call deconstructor. (Safe with basic types, for use in reserve())
 
 Array safety Notices:
 	-Do not preform memory reallocation/management/manipulation outside of access with the return of the data() function
-	-Do not expect pop to remove elements when your array size is zero.
-	-Do not expect peek to return valid element if array size is zero, it might even corrupt heap
-	-Do not expect operator[] to return valid object in array if index is outside array bounds, it might even corrupt heap
+	-Do not expect operator[] to return valid object in array if index is outside array bounds
 
 Other Notices:
 	-If you notice any problems with object management with array, contact your debugger/brain before you contact me.
@@ -27,7 +25,7 @@ class smart_arr {
 	T* arr;
 public:
 		//Constructors
-	inline constexpr smart_arr() : arr(0), width(0) {};//default constructor, creates array of size 0, and does not allocate memory
+	inline constexpr smart_arr() : arr(0), width(0) { };//default constructor, creates array of size 0, and does not allocate memory
 	inline smart_arr(size_t length) : arr(0), width(0) { reserve(length); }//creates array of width: length, and default constructs values
 	inline smart_arr(const smart_arr<T>& construct) : arr(0), width(0) { this->operator=(construct); }//providing constructor for copy
 	inline smart_arr(smart_arr<T>&& construct) noexcept : arr(0), width(0) { this->operator=(construct); }//providing constructor for move
@@ -80,18 +78,10 @@ public:
 		}
 	}
 
-		//Element access, for stack-like use.
-	inline void push(const T& instance) {//adds value to array - slow for multiple pushes (use reserve() and operator[])
-		reserve(width + 1);
-		arr[width - 1] = instance;
-	}
-	inline T& peek(void) { return arr[width - 1]; }//Access top element
-	inline void pop(void) { reserve(width ? (width - 1) : 0); } //removes top of array. (reserve() faster for multiple)
-
 		//Element access - for array and referencing use.
 	inline T& operator[](size_t ptr) { return arr[ptr]; }//access element at index by reference
 	inline const T& operator[](size_t ptr) const { return arr[ptr]; }//access element at index by const reference
-	inline const T* data(void) { return arr; }//Get ray array pointer - Not recommended to alter / remove data in any way!
+	inline const T* data(void) const { return arr; }//Get ray array pointer - Not recommended to alter / remove data in any way!
 
 		//Multi element removal
 	//writes over elements beyond index + length to index position, deconstructs and copies during move. Does not remove trailing elements.
